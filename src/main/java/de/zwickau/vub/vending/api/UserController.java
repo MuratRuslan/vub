@@ -4,16 +4,13 @@ import de.zwickau.vub.vending.model.User;
 import de.zwickau.vub.vending.service.UserException;
 import de.zwickau.vub.vending.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.logging.Logger;
 
 
 @RestController
 @RequestMapping("/users")
-public class UserApi {
+public class UserController {
     @Autowired
     private UserService userService;
 
@@ -21,7 +18,6 @@ public class UserApi {
     public ResponseEntity<String> postUser(@RequestBody User user) {
         try {
             userService.createUser(user);
-            System.out.println("Check");
             return ResponseEntity.ok("User registered!");
         } catch (UserException e) {
             return ResponseEntity.internalServerError()

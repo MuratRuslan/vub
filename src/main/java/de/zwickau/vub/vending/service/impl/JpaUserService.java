@@ -7,6 +7,7 @@ import de.zwickau.vub.vending.service.UserException;
 import de.zwickau.vub.vending.service.UserService;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,6 +15,9 @@ public class JpaUserService implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     @Override
     public void createUser(User user) throws UserException {
@@ -24,6 +28,7 @@ public class JpaUserService implements UserService {
             user.setRole(Role.BUYER);
         }
         user.setDeposit(0);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
 
