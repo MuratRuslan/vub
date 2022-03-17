@@ -1,10 +1,14 @@
 package de.zwickau.vub.vending.api;
 
+import com.fasterxml.jackson.core.JsonParser;
 import de.zwickau.vub.vending.jwt.JwtTokenUtil;
 import de.zwickau.vub.vending.model.User;
 import de.zwickau.vub.vending.service.UserService;
+import lombok.Data;
+import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,7 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping(value = "/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthController {
     @Autowired
     private UserService userService;
@@ -31,7 +35,7 @@ public class AuthController {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    @PostMapping
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("isAnonymous() or !isAuthenticated()")
     public ResponseEntity<String> authenticate(@RequestBody User user) {
         User found = userService.findUserByUsername(user.getUsername());
@@ -39,10 +43,11 @@ public class AuthController {
             String token = jwtUtil.generateToken(new org.springframework.security.core.userdetails.User(
                     user.getUsername(), found.getPassword(), List.of(found.getRole())
             ));
-            return ResponseEntity.ok(token);
+            return ResponseEntity.ok("{ \"token\": \"" + token+"\" }");
         }
         return ResponseEntity.internalServerError().body("Could not authenticate user");
     }
+
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -55,4 +60,7 @@ public class AuthController {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
+
+
 }
