@@ -5,7 +5,7 @@ import de.zwickau.vub.vending.model.User;
 import de.zwickau.vub.vending.repository.UserRepository;
 import de.zwickau.vub.vending.service.UserException;
 import de.zwickau.vub.vending.service.UserService;
-import org.apache.logging.log4j.util.Strings;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;

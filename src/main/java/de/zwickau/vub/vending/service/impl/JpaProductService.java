@@ -10,6 +10,7 @@ import de.zwickau.vub.vending.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -58,7 +59,8 @@ public class JpaProductService implements ProductService {
         if(!auth.getAuthorities().contains(Role.BUYER)) {
             throw new ProductException("Only buyers can buy products!");
         }
-        User foundUser = userRepository.findByUsername(auth.getPrincipal().toString()).get();
+        String username = ((UserDetails) auth.getPrincipal()).getUsername();
+        User foundUser = userRepository.findByUsername(username).get();
 
         if(!productRepository.existsByName(name)) {
             throw new ProductException("Product with given name does not exists!");

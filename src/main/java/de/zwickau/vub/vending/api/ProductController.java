@@ -60,6 +60,7 @@ public class ProductController {
     public ResponseEntity<Product> buyProduct(@PathVariable String name, @PathVariable Integer amount) {
         try {
             Product product = productService.buy(name, amount);
+            if (product == null) throw new ProductException("Product not found");
             return ResponseEntity.ok(product);
         } catch (ProductException e) {
             return ResponseEntity.internalServerError().body(null);
