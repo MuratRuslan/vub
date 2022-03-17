@@ -5,6 +5,7 @@ import de.zwickau.vub.vending.service.UserException;
 import de.zwickau.vub.vending.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -15,6 +16,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
+    @PreAuthorize("isAnonymous() or !isAuthenticated()")
     public ResponseEntity<String> postUser(@RequestBody User user) {
         try {
             userService.createUser(user);
@@ -26,6 +28,7 @@ public class UserController {
     }
 
     @PutMapping
+    @PreAuthorize("isAuthenticated() and hasAnyRole('BUYER', 'SELLER')")
     public ResponseEntity<String> updateUser(@RequestBody User user) {
         try {
             userService.updateUser(user);
@@ -37,6 +40,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{username}")
+    @PreAuthorize("isAuthenticated() and hasAnyRole('BUYER', 'SELLER')")
     public ResponseEntity<String> deleteUser(@PathVariable String username) {
         if (userService.findUserByUsername(username) == null) {
             return ResponseEntity.badRequest().body("User not found!");
@@ -46,6 +50,7 @@ public class UserController {
     }
 
     @GetMapping("/{username}")
+    @PreAuthorize("isAuthenticated() and hasAnyRole('BUYER', 'SELLER')")
     public ResponseEntity<User> getUser(@PathVariable String username) {
         User found = userService.findUserByUsername(username);
         if(null == found) {
@@ -55,6 +60,7 @@ public class UserController {
     }
 
     @PostMapping("/{username}/deposit/{amount}")
+    @PreAuthorize("isAuthenticated() and hasRole('BUYER')")
     public ResponseEntity<String> deposit(@PathVariable String username, @PathVariable Integer amount) {
         try {
             if (amount != 5 && amount != 10 && amount != 20 && amount != 50 && amount != 100) {
@@ -71,6 +77,7 @@ public class UserController {
     }
 
     @PostMapping("/{username}/reset")
+    @PreAuthorize("isAuthenticated() and hasRole('BUYER')")
     public ResponseEntity<String> resetDeposit(@PathVariable String username) {
         try {
             User user = userService.findUserByUsername(username);
